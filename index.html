@@ -5,16 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trắc nghiệm hướng nghiệp</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        .question { margin-bottom: 20px; }
-        button { margin: 5px; padding: 10px; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 20px;
+        }
+        #quiz {
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        #phone-number-section {
+            margin-top: 20px;
+        }
+        #phone-number-section input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #start-quiz-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #start-quiz-btn:hover {
+            background-color: #2ecc71;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h2>Trắc nghiệm hướng nghiệp</h2>
-    <div id="quiz"></div>
-    <button onclick="showResult()">Xem kết quả</button>
-    <h3 id="result"></h3>
+    
+    <!-- Phone number input section -->
+    <div id="phone-number-section">
+        <p>Vui lòng nhập số điện thoại của bạn để bắt đầu:</p>
+        <input type="text" id="phone-number" placeholder="Nhập số điện thoại" />
+        <button id="start-quiz-btn" onclick="startQuiz()">Bắt đầu</button>
+        <p id="phone-error" style="color: red; display: none;">Vui lòng nhập số điện thoại hợp lệ!</p>
+    </div>
+    
+    <!-- Quiz section (hidden initially) -->
+    <div id="quiz" class="hidden"></div>
+    <button onclick="showResult()" class="hidden">Xem kết quả</button>
+    <h3 id="result" class="hidden"></h3>
 
     <script>
         const questions = [
@@ -34,12 +110,31 @@
             { question: "Bạn thích công việc có hướng dẫn cụ thể hay tự do sáng tạo?", options: ["Hướng dẫn cụ thể", "Tự do sáng tạo"], type: "SN" },
             { question: "Bạn thích công việc mang tính nghiên cứu hay ứng dụng thực tế?", options: ["Nghiên cứu", "Ứng dụng thực tế"], type: "SN" },
             { question: "Bạn có thích giao tiếp nhiều trong công việc không?", options: ["Có", "Không"], type: "EI" },
-			{ question: "Bạn thường tin vào trực giác hay dữ liệu?", options: ["Trực giác", "Dữ liệu"], type: "TF" },
+            { question: "Bạn thường tin vào trực giác hay dữ liệu?", options: ["Trực giác", "Dữ liệu"], type: "TF" },
             { question: "Bạn thích làm việc với công nghệ hay con người?", options: ["Công nghệ", "Con người"], type: "SN" },
             { question: "Bạn thích công việc có kế hoạch dài hạn hay ngắn hạn?", options: ["Dài hạn", "Ngắn hạn"], type: "JP" }
         ];
 
         let scores = { E: 0, I: 0, T: 0, F: 0, S: 0, N: 0, J: 0, P: 0 };
+
+        function startQuiz() {
+            const phoneNumber = document.getElementById("phone-number").value;
+            const phoneError = document.getElementById("phone-error");
+            
+            // Simple phone number validation (just checking length here)
+            if (phoneNumber.length < 10) {
+                phoneError.style.display = "block";
+                return; // Exit if invalid phone number
+            } else {
+                phoneError.style.display = "none";
+            }
+            
+            // Hide the phone number section and show the quiz
+            document.getElementById("phone-number-section").classList.add("hidden");
+            document.getElementById("quiz").classList.remove("hidden");
+            document.querySelector("button[onclick='showResult()']").classList.remove("hidden");
+            loadQuiz();
+        }
 
         function loadQuiz() {
             let quizDiv = document.getElementById("quiz");
@@ -82,8 +177,6 @@
             };
             return careerMap[type] || "Khám phá thêm!";
         }
-
-        loadQuiz();
     </script>
 </body>
 </html>
