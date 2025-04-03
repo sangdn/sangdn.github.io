@@ -116,11 +116,12 @@
         ];
 
         let scores = { E: 0, I: 0, T: 0, F: 0, S: 0, N: 0, J: 0, P: 0 };
+        let userPhoneNumber = "";  // Variable to store the phone number
 
         function startQuiz() {
             const phoneNumber = document.getElementById("phone-number").value;
             const phoneError = document.getElementById("phone-error");
-            
+
             // Simple phone number validation (just checking length here)
             if (phoneNumber.length < 10) {
                 phoneError.style.display = "block";
@@ -128,7 +129,10 @@
             } else {
                 phoneError.style.display = "none";
             }
-            
+
+            // Save the phone number
+            userPhoneNumber = phoneNumber;
+
             // Hide the phone number section and show the quiz
             document.getElementById("phone-number-section").classList.add("hidden");
             document.getElementById("quiz").classList.remove("hidden");
@@ -164,7 +168,10 @@
                               (scores.T > scores.F ? "T" : "F") +
                               (scores.J > scores.P ? "J" : "P");
             let careerSuggestion = getCareerSuggestion(personality);
-            document.getElementById("result").innerText = "Phong cách làm việc: " + personality + "\nGợi ý nghề nghiệp: " + careerSuggestion;
+
+            // Display the phone number and result
+            document.getElementById("result").innerText = `Số điện thoại: ${userPhoneNumber}\nPhong cách làm việc: ${personality}\nGợi ý nghề nghiệp: ${careerSuggestion}`;
+            document.getElementById("result").classList.remove("hidden");
         }
 
         function getCareerSuggestion(type) {
