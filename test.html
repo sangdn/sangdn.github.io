@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm hướng nghiệp</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .question { margin-bottom: 20px; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Trắc nghiệm hướng nghiệp</h2>
+    <div id="quiz"></div>
+    <button onclick="showResult()">Xem kết quả</button>
+    <h3 id="result"></h3>
+
+    <script>
+        const questions = [
+            { question: "Bạn thích làm việc một mình hay theo nhóm?", options: ["Một mình", "Theo nhóm"], type: "EI" },
+            { question: "Bạn ra quyết định dựa trên lý trí hay cảm xúc?", options: ["Lý trí", "Cảm xúc"], type: "TF" },
+            { question: "Bạn thích phân tích dữ liệu hay sáng tạo nội dung?", options: ["Phân tích dữ liệu", "Sáng tạo nội dung"], type: "SN" },
+            { question: "Bạn thích lên kế hoạch trước hay linh hoạt theo tình huống?", options: ["Lên kế hoạch", "Linh hoạt"], type: "JP" },
+            { question: "Bạn thích làm việc trong môi trường ổn định hay thử thách?", options: ["Ổn định", "Thử thách"], type: "JP" },
+            { question: "Bạn thích học lý thuyết hay thực hành?", options: ["Lý thuyết", "Thực hành"], type: "SN" },
+            { question: "Bạn dễ dàng thích nghi với sự thay đổi hay cần thời gian?", options: ["Thích nghi nhanh", "Cần thời gian"], type: "JP" },
+            { question: "Bạn thích công việc có tính sáng tạo hay theo quy trình?", options: ["Sáng tạo", "Theo quy trình"], type: "SN" },
+            { question: "Bạn có thích làm việc với con người không?", options: ["Có", "Không"], type: "EI" },
+            { question: "Bạn ưu tiên hiệu suất hay mối quan hệ trong công việc?", options: ["Hiệu suất", "Mối quan hệ"], type: "TF" },
+            { question: "Bạn thích làm việc với số liệu hay ý tưởng?", options: ["Số liệu", "Ý tưởng"], type: "SN" },
+            { question: "Bạn thường quyết định nhanh hay suy nghĩ lâu?", options: ["Quyết định nhanh", "Suy nghĩ lâu"], type: "JP" },
+            { question: "Bạn thích làm việc cố định hay linh hoạt?", options: ["Cố định", "Linh hoạt"], type: "JP" },
+            { question: "Bạn thích công việc có hướng dẫn cụ thể hay tự do sáng tạo?", options: ["Hướng dẫn cụ thể", "Tự do sáng tạo"], type: "SN" },
+            { question: "Bạn thích công việc mang tính nghiên cứu hay ứng dụng thực tế?", options: ["Nghiên cứu", "Ứng dụng thực tế"], type: "SN" },
+            { question: "Bạn có thích giao tiếp nhiều trong công việc không?", options: ["Có", "Không"], type: "EI" },
+			{ question: "Bạn thường tin vào trực giác hay dữ liệu?", options: ["Trực giác", "Dữ liệu"], type: "TF" },
+            { question: "Bạn thích làm việc với công nghệ hay con người?", options: ["Công nghệ", "Con người"], type: "SN" },
+            { question: "Bạn thích công việc có kế hoạch dài hạn hay ngắn hạn?", options: ["Dài hạn", "Ngắn hạn"], type: "JP" }
+        ];
+
+        let scores = { E: 0, I: 0, T: 0, F: 0, S: 0, N: 0, J: 0, P: 0 };
+
+        function loadQuiz() {
+            let quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                let div = document.createElement("div");
+                div.classList.add("question");
+                div.innerHTML = `<p>${q.question}</p>`;
+                q.options.forEach((option, i) => {
+                    let btn = document.createElement("button");
+                    btn.innerText = option;
+                    btn.onclick = () => answerQuestion(index, i);
+                    div.appendChild(btn);
+                });
+                quizDiv.appendChild(div);
+            });
+        }
+
+        function answerQuestion(index, choice) {
+            let q = questions[index];
+            scores[q.type[choice]]++;
+            document.getElementsByClassName("question")[index].style.display = "none";
+        }
+
+        function showResult() {
+            let personality = (scores.E > scores.I ? "E" : "I") +
+                              (scores.S > scores.N ? "S" : "N") +
+                              (scores.T > scores.F ? "T" : "F") +
+                              (scores.J > scores.P ? "J" : "P");
+            let careerSuggestion = getCareerSuggestion(personality);
+            document.getElementById("result").innerText = "Phong cách làm việc: " + personality + "\nGợi ý nghề nghiệp: " + careerSuggestion;
+        }
+
+        function getCareerSuggestion(type) {
+            const careerMap = {
+                "ESTJ": "Quản lý, Kế toán, Tài chính",
+                "ENTP": "Marketing, Kinh doanh, Truyền thông",
+                "INFJ": "Giáo dục, Tư vấn tâm lý, Nhà văn",
+                "ISTP": "Kỹ thuật, Lập trình, Công nghệ",
+                "ENFP": "Nghệ thuật, Sáng tạo nội dung, Giải trí"
+            };
+            return careerMap[type] || "Khám phá thêm!";
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
