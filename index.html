@@ -49,10 +49,10 @@
             font-weight: bold;
             color: #2c3e50;
         }
-        #phone-number-section {
+        #phone-number-section, #name-section {
             margin-top: 20px;
         }
-        #phone-number-section input {
+        #phone-number-section input, #name-section input {
             padding: 10px;
             font-size: 16px;
             border-radius: 5px;
@@ -79,12 +79,19 @@
 <body>
     <h2>Trắc nghiệm hướng nghiệp</h2>
     
+    <!-- Name input section -->
+    <div id="name-section">
+        <p>Vui lòng nhập họ và tên của bạn:</p>
+        <input type="text" id="name" placeholder="Nhập họ và tên" />
+    </div>
+    
     <!-- Phone number input section -->
     <div id="phone-number-section">
         <p>Vui lòng nhập số điện thoại của bạn để bắt đầu:</p>
         <input type="text" id="phone-number" placeholder="Nhập số điện thoại" />
         <button id="start-quiz-btn" onclick="startQuiz()">Bắt đầu</button>
         <p id="phone-error" style="color: red; display: none;">Vui lòng nhập số điện thoại hợp lệ!</p>
+        <p id="name-error" style="color: red; display: none;">Vui lòng nhập họ và tên!</p>
     </div>
     
     <!-- Quiz section (hidden initially) -->
@@ -117,27 +124,61 @@
 
         let scores = { E: 0, I: 0, T: 0, F: 0, S: 0, N: 0, J: 0, P: 0 };
         let userPhoneNumber = "";  // Variable to store the phone number
+        let userName = "";         // Variable to store the name
 
         function startQuiz() {
             const phoneNumber = document.getElementById("phone-number").value;
+            const name = document.getElementById("name").value;
             const phoneError = document.getElementById("phone-error");
+            const nameError = document.getElementById("name-error");
 
-            // Simple phone number validation (just checking length here)
+            // Validate name and phone number
+            if (name === "") {
+                nameError.style.display = "block";
+                return;
+            } else {
+                nameError.style.display = "none";
+            }
+
             if (phoneNumber.length < 10) {
                 phoneError.style.display = "block";
-                return; // Exit if invalid phone number
+                return;
             } else {
                 phoneError.style.display = "none";
             }
 
-            // Save the phone number
+            // Save the name and phone number
             userPhoneNumber = phoneNumber;
+            userName = name;
 
-            // Hide the phone number section and show the quiz
+            // Submit data to Google Form
+            submitToGoogleForm(userName, userPhoneNumber);
+
+            // Hide the input sections and show the quiz
+            document.getElementById("name-section").classList.add("hidden");
             document.getElementById("phone-number-section").classList.add("hidden");
             document.getElementById("quiz").classList.remove("hidden");
             document.querySelector("button[onclick='showResult()']").classList.remove("hidden");
             loadQuiz();
+        }
+
+        function submitToGoogleForm(name, phone) {
+            const formURL = "https://docs.google.com/forms/d/e/1FAIpQLScn2Eh4z_QfH8LxhHYZ_rxu8GtKJI_bB2wBPN3AvvC8DXsn2w/formResponse";  // Replace with your form's URL
+            const nameField = "entry.1303266777";  // Replace with your Google Form's entry name for the name field
+            const phoneField = "entry.1389159848"; // Replace with your Google Form's entry name for the phone number field
+
+            const formData = new FormData();
+            formData.append(nameField, name);
+            formData.append(phoneField, phone);
+
+            fetch(formURL, {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                console.log("Data submitted to Google Form");
+            }).catch(error => {
+                console.error("Error submitting data to Google Form:", error);
+            });
         }
 
         function loadQuiz() {
@@ -169,8 +210,8 @@
                               (scores.J > scores.P ? "J" : "P");
             let careerSuggestion = getCareerSuggestion(personality);
 
-            // Display the phone number and result
-            document.getElementById("result").innerText = `Số điện thoại: ${userPhoneNumber}\nPhong cách làm việc: ${personality}\nGợi ý nghề nghiệp: ${careerSuggestion}`;
+            // Display the name, phone number, and result
+            document.getElementById("result").innerText = `Họ và tên: ${userName}\nSố điện thoại: ${userPhoneNumber}\nPhong cách làm việc: ${personality}\nGợi ý nghề nghiệp: ${careerSuggestion}`;
             document.getElementById("result").classList.remove("hidden");
         }
 
