@@ -49,10 +49,10 @@
             font-weight: bold;
             color: #2c3e50;
         }
-        #phone-number-section, #name-section {
+        #phone-number-section, #name-section, #study-abroad-section {
             margin-top: 20px;
         }
-        #phone-number-section input, #name-section input {
+        #phone-number-section input, #name-section input, #study-abroad-section select {
             padding: 10px;
             font-size: 16px;
             border-radius: 5px;
@@ -89,10 +89,24 @@
     <div id="phone-number-section">
         <p>Vui lòng nhập số điện thoại của bạn để bắt đầu:</p>
         <input type="text" id="phone-number" placeholder="Nhập số điện thoại" />
-        <button id="start-quiz-btn" onclick="startQuiz()">Bắt đầu</button>
-        <p id="phone-error" style="color: red; display: none;">Vui lòng nhập số điện thoại hợp lệ!</p>
-        <p id="name-error" style="color: red; display: none;">Vui lòng nhập họ và tên!</p>
     </div>
+    
+    <!-- Study abroad question section -->
+    <div id="study-abroad-section">
+        <p>Vui lòng chọn quốc gia bạn muốn đi du học:</p>
+        <select id="study-abroad">
+            <option value="Hàn Quốc">Hàn Quốc</option>
+            <option value="Nhật Bản">Nhật Bản</option>
+            <option value="Đài Loan">Đài Loan</option>
+            <option value="Học trong nước">Học trong nước</option>
+            <option value="Nước khác">Nước khác</option>
+        </select>
+    </div>
+
+    <button id="start-quiz-btn" onclick="startQuiz()">Bắt đầu</button>
+    
+    <p id="phone-error" style="color: red; display: none;">Vui lòng nhập số điện thoại hợp lệ!</p>
+    <p id="name-error" style="color: red; display: none;">Vui lòng nhập họ và tên!</p>
     
     <!-- Quiz section (hidden initially) -->
     <div id="quiz" class="hidden"></div>
@@ -125,10 +139,12 @@
         let scores = { E: 0, I: 0, T: 0, F: 0, S: 0, N: 0, J: 0, P: 0 };
         let userPhoneNumber = "";  // Variable to store the phone number
         let userName = "";         // Variable to store the name
+        let studyAbroadCountry = ""; // Variable to store the user's study abroad choice
 
         function startQuiz() {
             const phoneNumber = document.getElementById("phone-number").value;
             const name = document.getElementById("name").value;
+            const studyAbroad = document.getElementById("study-abroad").value;
             const phoneError = document.getElementById("phone-error");
             const nameError = document.getElementById("name-error");
 
@@ -147,29 +163,33 @@
                 phoneError.style.display = "none";
             }
 
-            // Save the name and phone number
+            // Save the name, phone number, and study abroad choice
             userPhoneNumber = phoneNumber;
             userName = name;
+            studyAbroadCountry = studyAbroad;
 
             // Submit data to Google Form
-            submitToGoogleForm(userName, userPhoneNumber);
+            submitToGoogleForm(userName, userPhoneNumber, studyAbroadCountry);
 
             // Hide the input sections and show the quiz
             document.getElementById("name-section").classList.add("hidden");
             document.getElementById("phone-number-section").classList.add("hidden");
+            document.getElementById("study-abroad-section").classList.add("hidden");
             document.getElementById("quiz").classList.remove("hidden");
             document.querySelector("button[onclick='showResult()']").classList.remove("hidden");
             loadQuiz();
         }
 
-        function submitToGoogleForm(name, phone) {
+        function submitToGoogleForm(name, phone, studyAbroad) {
             const formURL = "https://docs.google.com/forms/d/e/1FAIpQLScn2Eh4z_QfH8LxhHYZ_rxu8GtKJI_bB2wBPN3AvvC8DXsn2w/formResponse";  // Replace with your form's URL
             const nameField = "entry.1303266777";  // Replace with your Google Form's entry name for the name field
             const phoneField = "entry.1389159848"; // Replace with your Google Form's entry name for the phone number field
+            const studyAbroadField = "entry.286537007"; // Replace with your Google Form's entry name for the study abroad field
 
             const formData = new FormData();
             formData.append(nameField, name);
             formData.append(phoneField, phone);
+            formData.append(studyAbroadField, studyAbroad);
 
             fetch(formURL, {
                 method: "POST",
@@ -210,20 +230,31 @@
                               (scores.J > scores.P ? "J" : "P");
             let careerSuggestion = getCareerSuggestion(personality);
 
-            // Display the name, phone number, and result
-            document.getElementById("result").innerText = `Họ và tên: ${userName}\nSố điện thoại: ${userPhoneNumber}\nPhong cách làm việc: ${personality}\nGợi ý nghề nghiệp: ${careerSuggestion}`;
+            // Display the name, phone number, study abroad choice, and result
+            document.getElementById("result").innerText = `Họ và tên: ${userName}\nSố điện thoại: ${userPhoneNumber}\nQuốc gia du học: ${studyAbroadCountry}\nPhong cách làm việc: ${personality}\nGợi ý nghề nghiệp: ${careerSuggestion}`;
             document.getElementById("result").classList.remove("hidden");
         }
 
         function getCareerSuggestion(type) {
             const careerMap = {
-                "ESTJ": "Quản lý, Kế toán, Tài chính",
-                "ENTP": "Marketing, Kinh doanh, Truyền thông",
-                "INFJ": "Giáo dục, Tư vấn tâm lý, Nhà văn",
-                "ISTP": "Kỹ thuật, Lập trình, Công nghệ",
-                "ENFP": "Nghệ thuật, Sáng tạo nội dung, Giải trí"
+                "ISTJ": "Kế toán, Kiểm toán, Quản lý dự án, Hành chính nhân sự",
+                "ISFJ": "Giáo viên, Điều dưỡng, Tư vấn viên, Nhân viên xã hội",
+                "INFJ": "Tư vấn tâm lý, Nhà văn, Giảng viên, Chuyên gia phát triển con người",
+                "INTJ": "Nhà nghiên cứu, Lập trình viên, Phân tích hệ thống, Chiến lược gia",
+                "ISTP": "Kỹ thuật viên, Lập trình viên, Cơ khí, An ninh mạng",
+                "ISFP": "Nghệ sĩ, Nhiếp ảnh gia, Nhà thiết kế, Chuyên viên chăm sóc khách hàng",
+                "INFP": "Nhà văn, Biên kịch, Nhà hoạt động xã hội, Tư vấn tâm lý",
+                "INTP": "Nhà khoa học, Nhà phân tích dữ liệu, Kỹ sư phần mềm, Triết gia",
+                "ESTP": "Bán hàng, Doanh nhân, Quản lý sự kiện, Marketing thực chiến",
+                "ESFP": "Diễn viên, MC, Hướng dẫn viên du lịch, Chuyên viên truyền thông",
+                "ENFP": "Sáng tạo nội dung, Marketing, Nghệ thuật, Quan hệ công chúng",
+                "ENTP": "Khởi nghiệp, Truyền thông, Tư vấn chiến lược, Phát triển sản phẩm",
+                "ESTJ": "Quản lý, Tài chính, Luật sư, Sĩ quan quân đội",
+                "ESFJ": "Y tá, Giáo viên, Nhân sự, Chăm sóc khách hàng",
+                "ENFJ": "Tư vấn, Giáo dục, Lãnh đạo cộng đồng, Quản lý nhân sự",
+                "ENTJ": "CEO, Lập kế hoạch chiến lược, Luật sư, Kinh doanh quốc tế"
             };
-            return careerMap[type] || "Khám phá thêm!";
+            return careerMap[type] || "Sáng tạo nội dung, Marketing, Nghệ thuật, Quan hệ công chúng";
         }
     </script>
 </body>
